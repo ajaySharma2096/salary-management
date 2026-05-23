@@ -195,3 +195,17 @@ Server tests use an **SQLite in-memory database** (`NODE_ENV=test`) — no MySQL
 
 - **Redux Toolkit + Redux-Saga** — Async side effects (API calls) are isolated in sagas, keeping reducers pure.
 - **Optimistic UI patterns** — Loading and error states are tracked per feature slice (`auth`, `employees`, `analytics`).
+
+---
+
+## Documentation
+
+All extended documentation is in the [`docs/`](docs/) folder.
+
+| Document | Path | Description |
+|----------|------|-------------|
+| Planning | [docs/planning.md](docs/planning.md) | How the overall requirement was planned, how it was broken down into 10 subtasks, risk register, and completion summary |
+| Architecture | [docs/architecture.md](docs/architecture.md) | Full system architecture — directory layout, middleware chain, database schema, API map, auth flow, testing strategy |
+| ADR | [docs/ADR.md](docs/ADR.md) | Architecture Decision Records — ADR-001: JWT in httpOnly cookie; ADR-002: RBAC middleware factory |
+| Trade-offs | [docs/trade-offs.md](docs/trade-offs.md) | Technology choice rationale — React vs Next.js, Node.js vs alternatives, MySQL vs alternatives, Sequelize vs alternatives |
+| Performance & Security | [docs/performance-security.md](docs/performance-security.md) | Performance optimisations and security controls with implementation details and a summary matrix |
