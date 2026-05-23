@@ -5,11 +5,12 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
-// Security headers
-app.use(helmet());
+// Security headers — CSP disabled for API-only server
+app.use(helmet({ contentSecurityPolicy: false }));
 
 // CORS — allow only the configured client origin with credentials
 app.use(
@@ -19,14 +20,25 @@ app.use(
   })
 );
 
-// Rate limiting — 100 requests per 15 minutes per IP
+// Rate limiting — 100 requests per 15 minutes per IP (disabled in test)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: process.env.NODE_ENV === 'test' ? 0 : 100,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'test',
 });
 app.use(limiter);
+
+// Stricter rate limiter for auth endpoints — 10 requests per 15 minutes per IP (disabled in test)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: process.env.NODE_ENV === 'test' ? 0 : 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests' },
+  skip: () => process.env.NODE_ENV === 'test',
+});
 
 // Body parsing
 app.use(express.json());
@@ -44,6 +56,11 @@ if (process.env.NODE_ENV !== 'test') {
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
 });
+
+// Auth routes (with specific rate limiting on login/signup)
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/signup', authLimiter);
+app.use('/api/auth', authRoutes);
 
 // Global error handler
 // eslint-disable-next-line no-unused-vars
