@@ -21,17 +21,4 @@ const sequelize = isTest
       }
     );
 
-sequelize
-  .authenticate()
-  .then(async () => {
-    console.log('Database connection established successfully.');
-    if (process.env.NODE_ENV === 'development') {
-      await sequelize.sync({ alter: true });
-      console.log('Database schema synced (alter: true).');
-    }
-  })
-  .catch((err) => {
-    console.error('Unable to connect to the database:', err.message);
-  });
-
 module.exports = sequelize;

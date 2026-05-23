@@ -210,6 +210,12 @@ function generateEmployees(n, firstNames, lastNames) {
 
 async function seed() {
   try {
+    // Ensure schema is in sync before any model operations.
+    // Running sync here (instead of relying on database.js side-effects) prevents
+    // a race condition where ALTER TABLE and an open transaction compete for the same lock.
+    await sequelize.sync({ alter: true });
+    console.log('Database schema synced.');
+
     // Read name files from workspace root
     const firstNamesPath = path.join(__dirname, '../../first_names.txt');
     const lastNamesPath  = path.join(__dirname, '../../last_names.txt');
