@@ -3,10 +3,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import EmployeesPage from './pages/EmployeesPage';
 import ProtectedRoute from './routes/ProtectedRoute';
 import { logoutSuccess } from './redux/actions/authActions';
 
-const DashboardPlaceholder = () => <div>Dashboard (coming soon)</div>;
+const DashboardPlaceholder = () => <div style={{ padding: 24 }}>Dashboard (coming soon)</div>;
 
 const App = () => {
   const dispatch = useDispatch();
@@ -31,6 +32,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <DashboardPlaceholder />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/employees"
+          element={
+            <ProtectedRoute>
+              <EmployeesPage />
             </ProtectedRoute>
           }
         />
