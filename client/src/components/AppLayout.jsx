@@ -65,7 +65,7 @@ const AppLayout = ({ children }) => {
             overflow: 'hidden',
           }}
         >
-          {collapsed ? 'SM' : 'Salary Mgmt'}
+          {collapsed ? 'SM' : 'Salary Management'}
         </div>
         <Menu
           mode="inline"

@@ -43,8 +43,8 @@ const authLimiter = rateLimit({
 });
 
 // Body parsing
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Cookie parsing
 app.use(cookieParser());

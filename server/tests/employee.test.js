@@ -181,3 +181,62 @@ describe('DELETE /api/employees/:id', () => {
     expect(getRes.status).toBe(404);
   });
 });
+
+// ─── Extended search / sort / limit tests (Subtask 10) ───────────────────────
+
+describe('GET /api/employees — search edge cases', () => {
+  beforeEach(async () => {
+    await Employee.bulkCreate([
+      { ...validEmployee, firstName: 'Alice', lastName: 'Alpha', email: 'alice.alpha@test.com' },
+      { ...validEmployee, firstName: 'Bob',   lastName: 'Beta',  email: 'bob.beta@test.com' },
+    ]);
+  });
+
+  test('search param does case-insensitive partial matching', async () => {
+    const res = await request(app)
+      .get('/api/employees?search=alice')  // lowercase — employee is 'Alice'
+      .set('Cookie', authCookie);
+    expect(res.status).toBe(200);
+    expect(res.body.data.length).toBeGreaterThan(0);
+    expect(res.body.data[0].firstName).toBe('Alice');
+  });
+});
+
+describe('GET /api/employees — sort behaviour', () => {
+  beforeEach(async () => {
+    await Employee.bulkCreate([
+      { ...validEmployee, salary: 100000, email: 'sort1@test.com' },
+      { ...validEmployee, salary: 50000,  email: 'sort2@test.com' },
+      { ...validEmployee, salary: 75000,  email: 'sort3@test.com' },
+    ]);
+  });
+
+  test('sortBy=salary&sortOrder=ASC returns employees in ascending salary order', async () => {
+    const res = await request(app)
+      .get('/api/employees?sortBy=salary&sortOrder=ASC')
+      .set('Cookie', authCookie);
+    expect(res.status).toBe(200);
+    const salaries = res.body.data.map((e) => parseFloat(e.salary));
+    for (let i = 1; i < salaries.length; i++) {
+      expect(salaries[i]).toBeGreaterThanOrEqual(salaries[i - 1]);
+    }
+  });
+
+  test('invalid sortBy value (e.g. __proto__) defaults gracefully — does not crash', async () => {
+    const res = await request(app)
+      .get('/api/employees?sortBy=__proto__')
+      .set('Cookie', authCookie);
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('data');
+  });
+});
+
+describe('GET /api/employees — limit capping', () => {
+  test('limit > 100 is capped at 100 in the response', async () => {
+    const res = await request(app)
+      .get('/api/employees?limit=500')
+      .set('Cookie', authCookie);
+    expect(res.status).toBe(200);
+    expect(res.body.limit).toBe(100);
+  });
+});

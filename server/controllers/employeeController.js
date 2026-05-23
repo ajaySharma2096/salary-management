@@ -8,6 +8,11 @@ const ALLOWED_SORT_FIELDS = new Set([
   'country', 'salary', 'hireDate', 'createdAt', 'updatedAt', 'status',
 ]);
 
+// Escape LIKE wildcards to prevent wildcard abuse
+function escapeLike(str) {
+  return str.replace(/[%_\\]/g, '\\$&');
+}
+
 async function listEmployees(req, res, next) {
   try {
     let page = parseInt(req.query.page, 10) || 1;
@@ -25,10 +30,11 @@ async function listEmployees(req, res, next) {
     const where = {};
 
     if (search) {
+      const escaped = escapeLike(search);
       where[Op.or] = [
-        { firstName: { [Op.like]: `%${search}%` } },
-        { lastName: { [Op.like]: `%${search}%` } },
-        { email: { [Op.like]: `%${search}%` } },
+        { firstName: { [Op.like]: `%${escaped}%` } },
+        { lastName: { [Op.like]: `%${escaped}%` } },
+        { email: { [Op.like]: `%${escaped}%` } },
       ];
     }
     if (country) where.country = country;

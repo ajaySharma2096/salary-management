@@ -170,3 +170,52 @@ describe('GET /api/analytics/department-summary', () => {
     expect(parseFloat(eng.totalPayroll)).toBeCloseTo(220000, 0);
   });
 });
+
+// ─── Extended edge-case tests (Subtask 10) ───────────────────────────────────
+
+describe('Median salary — even vs odd employee counts', () => {
+  test('median of even number of employees (UK: 2 employees → 80000)', async () => {
+    const res = await request(app)
+      .get('/api/analytics/salary-by-country?country=UK')
+      .set('Cookie', authCookie);
+    expect(res.status).toBe(200);
+    const uk = res.body[0];
+    // Even: [70000, 90000] → (70000 + 90000) / 2 = 80000
+    expect(uk.employeeCount).toBe(2);
+    expect(uk.medianSalary).toBe(80000);
+  });
+
+  test('median of odd number of employees (USA: 3 employees → 100000)', async () => {
+    const res = await request(app)
+      .get('/api/analytics/salary-by-country?country=USA')
+      .set('Cookie', authCookie);
+    expect(res.status).toBe(200);
+    const usa = res.body[0];
+    // Odd: [80000, 100000, 120000] → middle value = 100000
+    expect(usa.employeeCount).toBe(3);
+    expect(usa.medianSalary).toBe(100000);
+  });
+});
+
+describe('Department summary — mixed active/inactive employees', () => {
+  test('total active employee count across all departments equals 4', async () => {
+    const res = await request(app)
+      .get('/api/analytics/department-summary')
+      .set('Cookie', authCookie);
+    expect(res.status).toBe(200);
+    // Active employees: Alice, Bob (Engineering), Dave, Eve (Finance) = 4
+    // Carol is inactive → excluded
+    const totalActive = res.body.reduce((sum, d) => sum + Number(d.employeeCount), 0);
+    expect(totalActive).toBe(4);
+  });
+
+  test('inactive employees department does not appear in department summary', async () => {
+    const res = await request(app)
+      .get('/api/analytics/department-summary')
+      .set('Cookie', authCookie);
+    expect(res.status).toBe(200);
+    // Carol is the only employee in 'Design' and she is inactive
+    const design = res.body.find((d) => d.department === 'Design');
+    expect(design).toBeUndefined();
+  });
+});
