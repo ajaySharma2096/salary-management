@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const authRoutes = require('./routes/authRoutes');
 const employeeRoutes = require('./routes/employeeRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 
 const app = express();
 
@@ -65,6 +66,9 @@ app.use('/api/auth', authRoutes);
 
 // Employee routes
 app.use('/api/employees', employeeRoutes);
+
+// Analytics routes
+app.use('/api/analytics', analyticsRoutes);
 
 // Global error handler
 // eslint-disable-next-line no-unused-vars

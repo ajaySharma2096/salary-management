@@ -98,6 +98,13 @@ Employee.init(
     modelName: 'Employee',
     tableName: 'employees',
     timestamps: true,
+    indexes: [
+      { fields: ['country'] },
+      { fields: ['jobTitle'] },
+      { fields: ['department'] },
+      { fields: ['status'] },
+      { fields: ['country', 'jobTitle'] },
+    ],
   }
 );
 
