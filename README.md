@@ -1,0 +1,1 @@
+A Salary Management tool for an organiszation. 
