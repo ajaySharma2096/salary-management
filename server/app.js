@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const authRoutes = require('./routes/authRoutes');
+const employeeRoutes = require('./routes/employeeRoutes');
 
 const app = express();
 
@@ -61,6 +62,9 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/signup', authLimiter);
 app.use('/api/auth', authRoutes);
+
+// Employee routes
+app.use('/api/employees', employeeRoutes);
 
 // Global error handler
 // eslint-disable-next-line no-unused-vars
