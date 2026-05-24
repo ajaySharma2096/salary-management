@@ -10,6 +10,7 @@ import {
   Row,
   Col,
   Card,
+  message,
 } from 'antd';
 import {
   PlusOutlined,
@@ -109,6 +110,7 @@ const EmployeesPage = () => {
 
   const handleDelete = (id) => {
     dispatch(deleteEmployeeRequest(id));
+    message.success('Employee deleted successfully.');
   };
 
   const columns = [
@@ -207,7 +209,7 @@ const EmployeesPage = () => {
           <Col flex="1 1 220px">
             <Input
               prefix={<SearchOutlined />}
-              placeholder="Search by name or email…"
+              placeholder="Search by email…"
               defaultValue={filters.search}
               onChange={handleSearchChange}
               allowClear

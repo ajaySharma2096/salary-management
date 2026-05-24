@@ -75,15 +75,17 @@ const EmployeeFormModal = ({ open, onClose, employee }) => {
     }
   }, [open, employee, form, dispatch]);
 
-  // Close modal automatically on successful submit
+  // Close modal automatically on successful submit.
+  // Guard with `open` so that a DELETE action (which also flips submitting true→false)
+  // does not trigger this effect while the modal is closed.
   const wasSubmitting = React.useRef(false);
   useEffect(() => {
-    if (wasSubmitting.current && !submitting && !error) {
+    if (open && wasSubmitting.current && !submitting && !error) {
       message.success(`Employee ${isEdit ? 'updated' : 'created'} successfully.`);
       onClose();
     }
     wasSubmitting.current = submitting;
-  }, [submitting, error, isEdit, onClose]);
+  }, [open, submitting, error, isEdit, onClose]);
 
   const onFinish = (values) => {
     const payload = {
